@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 
 const API_BASE = '/api'
 
@@ -54,6 +54,20 @@ function TicketForm({ onSuccess }) {
       setClassifyLoading(false)
     }
   }, [description])
+
+  // Auto-run classify when description changes (debounced), so user doesn't have to blur
+  const classifyTimeoutRef = useRef(null)
+  useEffect(() => {
+    if (!description.trim() || description.trim().length < 20) return
+    if (classifyTimeoutRef.current) clearTimeout(classifyTimeoutRef.current)
+    classifyTimeoutRef.current = setTimeout(() => {
+      fetchClassify()
+      classifyTimeoutRef.current = null
+    }, 700)
+    return () => {
+      if (classifyTimeoutRef.current) clearTimeout(classifyTimeoutRef.current)
+    }
+  }, [description, fetchClassify])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -118,7 +132,7 @@ function TicketForm({ onSuccess }) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             onBlur={fetchClassify}
-            placeholder="Describe your issue. Category and priority will be suggested."
+            placeholder="Describe your issue. Category and priority will be suggested (after you type a bit)."
           />
           {classifyLoading && <div className="loading">Suggesting category & priority…</div>}
         </div>

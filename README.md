@@ -42,6 +42,10 @@ Docker Compose loads `.env` automatically. Get a key at [Google AI Studio](https
 | GET    | `/api/tickets/stats/` | Aggregated stats (total, open, avg/day, breakdowns) |
 | POST   | `/api/tickets/classify/` | Body: `{"description": "..."}` → `{"suggested_category": "...", "suggested_priority": "..."}` |
 
+## Running without Docker
+
+If you run the backend and frontend separately (e.g. `python manage.py runserver` on port 8000 and `npm run dev` on port 3000), the frontend proxy will use `http://127.0.0.1:8000` by default, so the classify and ticket APIs will work. Ensure the backend is running before using the form.
+
 ## Requirements
 
 - Docker and Docker Compose  
